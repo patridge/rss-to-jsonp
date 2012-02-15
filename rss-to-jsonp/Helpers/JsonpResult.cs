@@ -3,6 +3,7 @@
     using System.Web;
     using System.Web.Mvc;
     using System.Web.Script.Serialization;
+    using Newtonsoft.Json;
     
     /// <summary>
     /// When given a callback, wraps a JsonResult in JSONP format.
@@ -25,24 +26,25 @@
             }
 
             HttpResponseBase response = controllerContext.HttpContext.Response;
-            if (!string.IsNullOrEmpty(ContentType)) {
+            if (!string.IsNullOrEmpty(base.ContentType)) {
                 // Allows ContentType to be set elsewhere, if needed.
-                response.ContentType = ContentType;
+                response.ContentType = base.ContentType;
             }
             else {
                 // Callback = JSONP => not technically JSON (interpreted by browser by <script src> tag injection).
                 response.ContentType = "application/javascript";
             }
 
-            if (ContentEncoding != null) {
-                response.ContentEncoding = ContentEncoding;
+            if (base.ContentEncoding != null) {
+                response.ContentEncoding = base.ContentEncoding;
             }
 
-            if (Data != null) {
-                var javaScriptSerializer = new JavaScriptSerializer();
-                javaScriptSerializer.RegisterConverters(new JavaScriptConverter[] { new ExpandoJsonConverter() });
-                string json = javaScriptSerializer.Serialize(Data);
-                response.Write(string.Format("{0}({1})", Callback, json));
+            if (this.Data != null) {
+                //var javaScriptSerializer = new JavaScriptSerializer();
+                //javaScriptSerializer.RegisterConverters(new JavaScriptConverter[] { new ExpandoJsonConverter() });
+                //string json = javaScriptSerializer.Serialize(Data);
+                string json = JsonConvert.SerializeObject(this.Data);
+                response.Write(string.Format("{0}({1})", this.Callback, json));
             }
         }
     }
