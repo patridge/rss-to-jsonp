@@ -38,7 +38,7 @@
                 title = (string)getElement(rootElements, "title"),
                 updated = (DateTime)getElement(rootElements, "updated"),
                 entries = entries
-            }, callback;
+            }, callback);
             result.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return result;
         }
