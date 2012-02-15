@@ -38,7 +38,7 @@
                 title = (string)getElement(rootElements, "title"),
                 updated = (DateTime)getElement(rootElements, "updated"),
                 entries = entries
-            });
+            }, callback;
             result.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return result;
         }
@@ -64,7 +64,7 @@
                 description = (string)getElement(rootElements, "description"),
                 lastBuildDate = (DateTime)getElement(rootElements, "lastBuildDate"),
                 entries = entries
-            });
+            }, callback);
             result.JsonRequestBehavior = JsonRequestBehavior.AllowGet;
             return result;
         }
