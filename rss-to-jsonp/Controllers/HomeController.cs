@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +19,12 @@ namespace rss_to_jsonp.Controllers
 {
     public class HomeController : Controller
     {
-        static HttpClient httpClient = new HttpClient();
+        private readonly IHttpClientFactory clientFactory;
+        public HomeController(IHttpClientFactory clientFactory)
+        {
+            this.clientFactory = clientFactory;
+        }
+
         /// <summary>
         /// Cheesy way of avoiding namespaces.
         /// </summary>
@@ -26,11 +32,24 @@ namespace rss_to_jsonp.Controllers
         {
             return source.FirstOrDefault(e => e.Name.LocalName == name);
         }
-        private async Task<XDocument> GetFeed(string url, CancellationToken cancellationToken)
+        private async Task<XDocument> GetFeedAsync(string url, string acceptType, CancellationToken cancellationToken)
         {
-            var responseStream = await httpClient.GetStreamAsync(url).ConfigureAwait(false);
-            var xdoc = await XDocument.LoadAsync(responseStream, LoadOptions.None, cancellationToken).ConfigureAwait(false);
-            return xdoc;
+            var httpClient = clientFactory.CreateClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Add("Accept", acceptType);
+            request.Headers.Add("User-Agent", "rss-to-jsonp");
+            XDocument retrievedXdocument = null;
+            using (HttpResponseMessage responseMessage = await httpClient.SendAsync(request).ConfigureAwait(false))
+            {
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    using (var responseStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                    {
+                        retrievedXdocument = await XDocument.LoadAsync(responseStream, LoadOptions.None, cancellationToken).ConfigureAwait(false);
+                    }
+                }
+            }
+            return retrievedXdocument;
         }
         public async Task<JsonResult> Atom(string url, string callback)
         {
@@ -39,7 +58,7 @@ namespace rss_to_jsonp.Controllers
                 return Json(null);
             }
 
-            IEnumerable<XElement> rootElements = (await GetFeed(url, CancellationToken.None)).Root.Elements();
+            IEnumerable<XElement> rootElements = (await GetFeedAsync(url, "application/atom+xml", CancellationToken.None)).Root.Elements();
             IEnumerable<XElement> entryElements = rootElements.Where(e => e.Name.LocalName == "entry");
             var entries = entryElements.Select(e => {
                 IEnumerable<XElement> entryDetails = e.Elements();
@@ -68,7 +87,7 @@ namespace rss_to_jsonp.Controllers
                 return Json(null);
             }
 
-            IEnumerable<XElement> rootElements = getElement((await GetFeed(url, CancellationToken.None)).Root.Elements(), "channel").Elements();
+            IEnumerable<XElement> rootElements = getElement((await GetFeedAsync(url, "application/rss+xml", CancellationToken.None)).Root.Elements(), "channel").Elements();
             IEnumerable<XElement> entryElements = rootElements.Where(e => e.Name.LocalName == "item");
             var entries = entryElements.Select(e => {
                 IEnumerable<XElement> entryDetails = e.Elements();
