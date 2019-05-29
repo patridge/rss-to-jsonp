@@ -1,6 +1,6 @@
 using System;
 
-namespace DmWebApplication1.Models
+namespace rss_to_jsonp.Models
 {
     public class ErrorViewModel
     {
