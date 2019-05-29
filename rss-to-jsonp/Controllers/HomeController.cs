@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Xml.Linq;
@@ -16,6 +18,7 @@ namespace rss_to_jsonp.Controllers
 {
     public class HomeController : Controller
     {
+        static HttpClient httpClient = new HttpClient();
         /// <summary>
         /// Cheesy way of avoiding namespaces.
         /// </summary>
@@ -23,18 +26,20 @@ namespace rss_to_jsonp.Controllers
         {
             return source.FirstOrDefault(e => e.Name.LocalName == name);
         }
-        private static XDocument GetFeed(string url)
+        private async Task<XDocument> GetFeed(string url, CancellationToken cancellationToken)
         {
-            return XDocument.Load(url);
+            var responseStream = await httpClient.GetStreamAsync(url).ConfigureAwait(false);
+            var xdoc = await XDocument.LoadAsync(responseStream, LoadOptions.None, cancellationToken).ConfigureAwait(false);
+            return xdoc;
         }
-        public JsonResult Atom(string url, string callback)
+        public async Task<JsonResult> Atom(string url, string callback)
         {
             if (url == null)
             {
                 return Json(null);
             }
 
-            IEnumerable<XElement> rootElements = GetFeed(url).Root.Elements();
+            IEnumerable<XElement> rootElements = (await GetFeed(url, CancellationToken.None)).Root.Elements();
             IEnumerable<XElement> entryElements = rootElements.Where(e => e.Name.LocalName == "entry");
             var entries = entryElements.Select(e => {
                 IEnumerable<XElement> entryDetails = e.Elements();
@@ -56,14 +61,14 @@ namespace rss_to_jsonp.Controllers
             }, callback);
             return result;
         }
-        public JsonResult Rss(string url, string callback)
+        public async Task<JsonResult> Rss(string url, string callback)
         {
             if (url == null)
             {
                 return Json(null);
             }
 
-            IEnumerable<XElement> rootElements = getElement(GetFeed(url).Root.Elements(), "channel").Elements();
+            IEnumerable<XElement> rootElements = getElement((await GetFeed(url, CancellationToken.None)).Root.Elements(), "channel").Elements();
             IEnumerable<XElement> entryElements = rootElements.Where(e => e.Name.LocalName == "item");
             var entries = entryElements.Select(e => {
                 IEnumerable<XElement> entryDetails = e.Elements();
