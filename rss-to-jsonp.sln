@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28917.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rss-to-jsonp", "rss-to-jsonp\rss-to-jsonp.csproj", "{50B9F9EF-0DD5-4C59-A28F-24D2F5FD4066}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rss-to-jsonp", "rss-to-jsonp\rss-to-jsonp.csproj", "{960C18C4-4925-428D-B700-C88B7B3C9139}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{50B9F9EF-0DD5-4C59-A28F-24D2F5FD4066}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50B9F9EF-0DD5-4C59-A28F-24D2F5FD4066}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50B9F9EF-0DD5-4C59-A28F-24D2F5FD4066}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50B9F9EF-0DD5-4C59-A28F-24D2F5FD4066}.Release|Any CPU.Build.0 = Release|Any CPU
+		{960C18C4-4925-428D-B700-C88B7B3C9139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{960C18C4-4925-428D-B700-C88B7B3C9139}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{960C18C4-4925-428D-B700-C88B7B3C9139}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{960C18C4-4925-428D-B700-C88B7B3C9139}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0D4F785A-A9CD-4BBD-8435-7589E85BBF4A}
+		SolutionGuid = {83420C2A-42AE-4D74-AE9C-26A9B422A141}
 	EndGlobalSection
 EndGlobal
